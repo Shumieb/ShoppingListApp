@@ -1,0 +1,13 @@
+﻿@page "/"
+
+@inject ItemsClient Client;
+
+
+<PageTitle>Home</PageTitle>
+
+<h2 class="text-center p-2 mb-3">My Shopping List</h2>
+
+<AddItemComponent />
+
+<ItemListComponent @rendermode="InteractiveServer" />
+

@@ -1,0 +1,55 @@
+﻿@inject ItemsClient Client;
+@inject NavigationManager NavigationManager
+
+@page "/editItem/{Id:int}"
+
+<div class="card p-3 m-auto w-75 text-center">
+
+    <h4 class="fs-4 p-1">Edit Item - @EditedItem!.Name </h4>
+
+    <EditForm Model="EditedItem"
+              FormName="editItem"
+              OnSubmit="myHandleEdit"
+              class="p-1 m-auto">
+        <div class="input-group  mb-3">
+            <InputText @bind-Value="EditedItem!.Name" class="form-control" aria-label="new item list" />
+            <button class="btn btn-primary" type="submit">Edit</button>
+        </div>
+    </EditForm>
+
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    private EditItemModel? EditedItem { get; set; }
+
+    //protected override void OnInitialized() => EditedItem ??= new() { Name = "" };
+
+    protected override void OnInitialized()
+    {
+        if(EditedItem == null)
+        {
+            Item? myItem = Client.GetItem(Id);
+           // Console.WriteLine(myItem!.Name);
+            EditedItem = new() { Name = myItem!.Name };
+        }
+    }
+
+    private void myHandleEdit()
+    {
+
+        Item? itemToUpdate = new()
+            {
+                Id = Id,
+                Name = EditedItem!.Name,
+                IsPicked = false
+            };
+
+        Client.UpdateItem(itemToUpdate);
+        //Console.WriteLine(EditedItem!.Name);
+        NavigationManager.NavigateTo("/");
+    }
+}
