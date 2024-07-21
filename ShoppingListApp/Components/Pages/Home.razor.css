@@ -1,4 +1,7 @@
-.navbar {
-    background-color: #00004f;
+﻿.page-header{
     background: linear-gradient(90deg, rgba(0,59,122,1) 0%, rgba(68,40,117,1) 35%, rgba(0,95,130,1) 100%);
+}
+
+.colour-dark {
+    color: #003b7a;
 }

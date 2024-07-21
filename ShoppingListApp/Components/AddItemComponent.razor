@@ -1,21 +1,33 @@
-﻿@inject ItemsClient Client;
+﻿@inject ItemsClient Client
+@inject NavigationManager NavigationManager
 
-<div class="card p-3 m-auto w-75 text-center">
+<div class="card p-3 m-auto w-75 text-center mb-4 add_form">
 
-    <h4 class="fs-4 p-1">Add New Item</h4>
+    <h4 class="fs-4 p-1 text-decoration-underline mb-3 colour-dark">Add New Item</h4>
 
     <EditForm 
         Model="NewItem" 
         FormName="addItem" 
-        OnSubmit="handleSubmit"
-        class="p-1 m-auto"
+        OnValidSubmit="handleSubmit"
+        class="p-1 mx-auto"
     >
-        <div class="input-group  mb-3">
-            <InputText @bind-Value="NewItem!.Name" placeholder="e.g Milk" class="form-control" aria-label="new item list" />
-            <button class="btn btn-primary" type="submit">Add</button>
-        </div>
+        <div class="input-group  mb-2">
+            <InputText 
+                @bind-Value="NewItem!.Name" 
+                placeholder="e.g Milk" 
+                class="form-control fs-5 colour-dark" 
+                aria-label="new item list"
+                @onfocus="()=>hideErrorMsg()" />
+            <button class="btn btn-primary fs-5" type="submit">Add</button>
+        </div>        
     </EditForm>
 
+    @if (showErrorMsg)
+    {
+        <div class="my-1">
+            <p class="fs-5 fst-italic text-danger">@errorMsg</p>
+        </div>
+    }
 </div>
 
 
@@ -25,16 +37,31 @@
 
     Random rnd = new Random();
 
-    protected override void OnInitialized() => NewItem ??= new() { Name=""};
+    protected override void OnInitialized() => NewItem ??= new() { Name=string.Empty };
+
+    private bool showErrorMsg = false;
+    private string errorMsg = "";
 
     private void handleSubmit()
     {
-        if(NewItem != null)
+        if (!string.IsNullOrEmpty(NewItem!.Name))
         {
             int newId = rnd.Next(520);
             NewItem.Id = newId;
             NewItem.IsPicked = false;
             Client.AddNewItem(NewItem);
-        }        
-    }        
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            errorMsg = "Please enter a shopping list item.";
+            showErrorMsg = true;
+        }
+    }  
+    
+    private void hideErrorMsg()
+    {
+        errorMsg = "";
+        showErrorMsg = false;
+    }
 }

@@ -1,20 +1,37 @@
 ﻿@inject ItemsClient Client;
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 @page "/editItem/{Id:int}"
 
-<div class="card p-3 m-auto w-75 text-center">
+<div class="card p-3 m-auto w-75 text-center edit_form">
 
-    <h4 class="fs-4 p-1">Edit Item - @EditedItem!.Name </h4>
+    <div class="d-flex justify-content-end px-3">
+        <a href="/" class="text-white bg-danger btn fs-5" role="button">X</a>
+    </div>    
+
+    <h4 class="fs-4 p-1 mb-3">Edit Item - @EditedItem!.Name </h4>
 
     <EditForm Model="EditedItem"
               FormName="editItem"
-              OnSubmit="myHandleEdit"
-              class="p-1 m-auto">
+              OnValidSubmit="myHandleEdit"
+              class="p-1 mx-auto">
         <div class="input-group  mb-3">
-            <InputText @bind-Value="EditedItem!.Name" class="form-control" aria-label="new item list" />
-            <button class="btn btn-primary" type="submit">Edit</button>
+            <InputText 
+                @bind-Value="EditedItem!.Name" 
+                class="form-control fs-5" 
+                aria-label="new item list" 
+                @onfocus="()=>hideErrorMsg()" 
+            />
+            <button class="btn btn-primary fs-5" type="submit">Edit</button>
         </div>
+
+        @if (showErrorMsg)
+        {
+            <div class="my-3 mt-4">
+                <p class="fs-5 fst-italic text-danger">@errorMsg</p>
+            </div>
+        }        
     </EditForm>
 
 </div>
@@ -26,16 +43,16 @@
     [SupplyParameterFromForm]
     private EditItemModel? EditedItem { get; set; }
 
-    //protected override void OnInitialized() => EditedItem ??= new() { Name = "" };
+    private bool showErrorMsg = false;
+    private string errorMsg = "";
 
     protected override void OnInitialized()
     {
         if(EditedItem == null)
         {
             Item? myItem = Client.GetItem(Id);
-           // Console.WriteLine(myItem!.Name);
             EditedItem = new() { Name = myItem!.Name };
-        }
+        }       
     }
 
     private void myHandleEdit()
@@ -48,8 +65,26 @@
                 IsPicked = false
             };
 
-        Client.UpdateItem(itemToUpdate);
-        //Console.WriteLine(EditedItem!.Name);
+        if (!string.IsNullOrEmpty(itemToUpdate.Name))
+        {
+            Client.UpdateItem(itemToUpdate);
+            CloseForm();
+        }
+        else
+        {
+            errorMsg = "Please enter a shopping list item.";
+            showErrorMsg = true;           
+        }        
+    }
+
+    private void hideErrorMsg()
+    {
+        errorMsg = "";
+        showErrorMsg = false;
+    }
+
+    private void CloseForm()
+    {
         NavigationManager.NavigateTo("/");
     }
 }

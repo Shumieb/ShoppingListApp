@@ -1,19 +1,15 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="d-flex flex-column justify-content-evenly body">
+    <NavMenu />   
 
-    <main>
-        <div class="top-row px-4">
-            <a href="about">About</a>
-        </div>
-
+    <main class="p-2">
         <article class="content px-4">
             @Body
         </article>
     </main>
+
+    <MainFooter/>
 </div>
 
 

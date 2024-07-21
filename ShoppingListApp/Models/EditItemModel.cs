@@ -1,7 +1,10 @@
-﻿namespace ShoppingListApp.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ShoppingListApp.Models
 {
     public class EditItemModel
     {
-        public required string Name { get; set; }
+        [Required]
+        public string Name { get; set; }
     }
 }
